@@ -1,0 +1,273 @@
+week,date,kickoff_et,away_team,home_team,network,site_note,window,neutral_site,international
+1,2025-09-04,,Dallas Cowboys,Philadelphia,,,,False,False
+1,2025-09-05,,Kansas City Chiefs,Los,,Sao Paulo,,True,True
+1,2025-09-07,,Arizona Cardinals,New,,,,False,False
+1,2025-09-07,,Baltimore Ravens,Buffalo,,,,False,False
+1,2025-09-07,,Carolina Panthers,Jacksonville,,,,False,False
+1,2025-09-07,,Cincinnati Bengals,Cleveland,,,,False,False
+1,2025-09-07,,Detroit Lions,Green,,,,False,False
+1,2025-09-07,,Houston Texans,Los,,,,False,False
+1,2025-09-07,,Las Vegas Raiders,New,,,,False,False
+1,2025-09-07,,Miami Dolphins,Indianapolis,,,,False,False
+1,2025-09-07,,New York Giants,Washington,,,,False,False
+1,2025-09-07,,Pittsburgh Steelers,New,,,,False,False
+1,2025-09-07,,Tampa Bay Buccaneers,Atlanta,,,,False,False
+1,2025-09-07,,Tennessee Titans,Denver,,,,False,False
+1,2025-09-07,,ers,Seattle,,,,False,False
+1,2025-09-08,,Minnesota Vikings,Chicago,,,,False,False
+2,2025-09-11,,Washington Commanders,Green,,,,False,False
+2,2025-09-14,,Atlanta Falcons,Minnesota,,,,False,False
+2,2025-09-14,,Buffalo Bills,New,,,,False,False
+2,2025-09-14,,Carolina Panthers,Arizona,,,,False,False
+2,2025-09-14,,Chicago Bears,Detroit,,,,False,False
+2,2025-09-14,,Cleveland Browns,Baltimore,,,,False,False
+2,2025-09-14,,Denver Broncos,Indianapolis,,,,False,False
+2,2025-09-14,,Jacksonville Jaguars,Cincinnati,,,,False,False
+2,2025-09-14,,Los Angeles Rams,Tennessee,,,,False,False
+2,2025-09-14,,New England Patriots,Miami,,,,False,False
+2,2025-09-14,,New York Giants,Dallas,,,,False,False
+2,2025-09-14,,Philadelphia Eagles,Kansas,,,,False,False
+2,2025-09-14,,Seattle Seahawks,Pittsburgh,,,,False,False
+2,2025-09-14,,ers,New,,,,False,False
+2,2025-09-15,,Los Angeles Chargers,Las,,,,False,False
+2,2025-09-15,,Tampa Bay Buccaneers,Houston,,,,False,False
+3,2025-09-18,,Miami Dolphins,Buffalo,,,,False,False
+3,2025-09-21,,Arizona Cardinals,San,,,,False,False
+3,2025-09-21,,Atlanta Falcons,Carolina,,,,False,False
+3,2025-09-21,,Cincinnati Bengals,Minnesota,,,,False,False
+3,2025-09-21,,Dallas Cowboys,Chicago,,,,False,False
+3,2025-09-21,,Denver Broncos,Los,,,,False,False
+3,2025-09-21,,Green Bay Packers,Cleveland,,,,False,False
+3,2025-09-21,,Houston Texans,Jacksonville,,,,False,False
+3,2025-09-21,,Indianapolis Colts,Tennessee,,,,False,False
+3,2025-09-21,,Kansas City Chiefs,New,,,,False,False
+3,2025-09-21,,Las Vegas Raiders,Washington,,,,False,False
+3,2025-09-21,,Los Angeles Rams,Philadelphia,,,,False,False
+3,2025-09-21,,New Orleans Saints,Seattle,,,,False,False
+3,2025-09-21,,New York Jets,Tampa,,,,False,False
+3,2025-09-21,,Pittsburgh Steelers,New,,,,False,False
+3,2025-09-22,,Detroit Lions,Baltimore,,,,False,False
+4,2025-09-25,,Seattle Seahawks,Arizona,,,,False,False
+4,2025-09-28,,Baltimore Ravens,Kansas,,,,False,False
+4,2025-09-28,,Carolina Panthers,New,,,,False,False
+4,2025-09-28,,Chicago Bears,Las,,,,False,False
+4,2025-09-28,,Cleveland Browns,Detroit,,,,False,False
+4,2025-09-28,,Green Bay Packers,Dallas,,,,False,False
+4,2025-09-28,,Indianapolis Colts,Los,,,,False,False
+4,2025-09-28,,Jacksonville Jaguars,San,,,,False,False
+4,2025-09-28,,Los Angeles Chargers,New,,,,False,False
+4,2025-09-28,,Minnesota Vikings,Pittsburgh,,Dublin,,True,True
+4,2025-09-28,,New Orleans Saints,Buffalo,,,,False,False
+4,2025-09-28,,Philadelphia Eagles,Tampa,,,,False,False
+4,2025-09-28,,Tennessee Titans,Houston,,,,False,False
+4,2025-09-28,,Washington Commanders,Atlanta,,,,False,False
+4,2025-09-29,,Cincinnati Bengals,Denver,,,,False,False
+4,2025-09-29,,New York Jets,Miami,,,,False,False
+5,2025-10-02,,ers,Los,,,,False,False
+5,2025-10-05,,Dallas Cowboys,New,,,,False,False
+5,2025-10-05,,Denver Broncos,Philadelphia,,,,False,False
+5,2025-10-05,,Detroit Lions,Cincinnati,,,,False,False
+5,2025-10-05,,Houston Texans,Baltimore,,,,False,False
+5,2025-10-05,,Las Vegas Raiders,Indianapolis,,,,False,False
+5,2025-10-05,,Miami Dolphins,Carolina,,,,False,False
+5,2025-10-05,,Minnesota Vikings,Cleveland,,Tottenham,,True,True
+5,2025-10-05,,New England Patriots,Buffalo,,,,False,False
+5,2025-10-05,,New York Giants,New,,,,False,False
+5,2025-10-05,,Tampa Bay Buccaneers,Seattle,,,,False,False
+5,2025-10-05,,Tennessee Titans,Arizona,,,,False,False
+5,2025-10-05,,Washington Commanders,Los,,,,False,False
+5,2025-10-06,,Kansas City Chiefs,Jacksonville,,,,False,False
+6,2025-10-09,,Philadelphia Eagles,New,,,,False,False
+6,2025-10-12,,Arizona Cardinals,Indianapolis,,,,False,False
+6,2025-10-12,,Cincinnati Bengals,Green,,,,False,False
+6,2025-10-12,,Cleveland Browns,Pittsburgh,,,,False,False
+6,2025-10-12,,Dallas Cowboys,Carolina,,,,False,False
+6,2025-10-12,,Denver Broncos,New,,Tottenham,,True,True
+6,2025-10-12,,Detroit Lions,Kansas,,,,False,False
+6,2025-10-12,,Los Angeles Chargers,Miami,,,,False,False
+6,2025-10-12,,Los Angeles Rams,Baltimore,,,,False,False
+6,2025-10-12,,New England Patriots,New,,,,False,False
+6,2025-10-12,,Seattle Seahawks,Jacksonville,,,,False,False
+6,2025-10-12,,Tennessee Titans,Las,,,,False,False
+6,2025-10-12,,ers,Tampa,,,,False,False
+6,2025-10-13,,Buffalo Bills,Atlanta,,,,False,False
+6,2025-10-13,,Chicago Bears,Washington,,,,False,False
+7,2025-10-16,,Pittsburgh Steelers,Cincinnati,,,,False,False
+7,2025-10-19,,Atlanta Falcons,San,,,,False,False
+7,2025-10-19,,Carolina Panthers,New,,,,False,False
+7,2025-10-19,,Green Bay Packers,Arizona,,,,False,False
+7,2025-10-19,,Indianapolis Colts,Los,,,,False,False
+7,2025-10-19,,Las Vegas Raiders,Kansas,,,,False,False
+7,2025-10-19,,Los Angeles Rams,Jacksonville,,Wembley,,True,True
+7,2025-10-19,,Miami Dolphins,Cleveland,,,,False,False
+7,2025-10-19,,New England Patriots,Tennessee,,,,False,False
+7,2025-10-19,,New Orleans Saints,Chicago,,,,False,False
+7,2025-10-19,,New York Giants,Denver,,,,False,False
+7,2025-10-19,,Philadelphia Eagles,Minnesota,,,,False,False
+7,2025-10-19,,Washington Commanders,Dallas,,,,False,False
+7,2025-10-20,,Houston Texans,Seattle,,,,False,False
+7,2025-10-20,,Tampa Bay Buccaneers,Detroit,,,,False,False
+8,2025-10-23,,Minnesota Vikings,Los,,,,False,False
+8,2025-10-26,,Buffalo Bills,Carolina,,,,False,False
+8,2025-10-26,,Chicago Bears,Baltimore,,,,False,False
+8,2025-10-26,,Cleveland Browns,New,,,,False,False
+8,2025-10-26,,Dallas Cowboys,Denver,,,,False,False
+8,2025-10-26,,Green Bay Packers,Pittsburgh,,,,False,False
+8,2025-10-26,,Miami Dolphins,Atlanta,,,,False,False
+8,2025-10-26,,New York Giants,Philadelphia,,,,False,False
+8,2025-10-26,,New York Jets,Cincinnati,,,,False,False
+8,2025-10-26,,Tampa Bay Buccaneers,New,,,,False,False
+8,2025-10-26,,Tennessee Titans,Indianapolis,,,,False,False
+8,2025-10-26,,ers,Houston,,,,False,False
+8,2025-10-27,,Washington Commanders,Kansas,,,,False,False
+9,2025-10-30,,Baltimore Ravens,Miami,,,,False,False
+9,2025-11-02,,Atlanta Falcons,New,,,,False,False
+9,2025-11-02,,Carolina Panthers,Green,,,,False,False
+9,2025-11-02,,Chicago Bears,Cincinnati,,,,False,False
+9,2025-11-02,,Denver Broncos,Houston,,,,False,False
+9,2025-11-02,,Indianapolis Colts,Pittsburgh,,,,False,False
+9,2025-11-02,,Jacksonville Jaguars,Las,,,,False,False
+9,2025-11-02,,Kansas City Chiefs,Buffalo,,,,False,False
+9,2025-11-02,,Los Angeles Chargers,Tennessee,,,,False,False
+9,2025-11-02,,Minnesota Vikings,Detroit,,,,False,False
+9,2025-11-02,,New Orleans Saints,Los,,,,False,False
+9,2025-11-02,,Seattle Seahawks,Washington,,,,False,False
+9,2025-11-02,,ers,New,,,,False,False
+9,2025-11-03,,Arizona Cardinals,Dallas,,,,False,False
+10,2025-11-06,,Las Vegas Raiders,Denver,,,,False,False
+10,2025-11-09,,Arizona Cardinals,Seattle,,,,False,False
+10,2025-11-09,,Atlanta Falcons,Indianapolis,,,,False,False
+10,2025-11-09,,Baltimore Ravens,Minnesota,,,,False,False
+10,2025-11-09,,Buffalo Bills,Miami,,,,False,False
+10,2025-11-09,,Cleveland Browns,New,,,,False,False
+10,2025-11-09,,Detroit Lions,Washington,,,,False,False
+10,2025-11-09,,Jacksonville Jaguars,Houston,,,,False,False
+10,2025-11-09,,Los Angeles Rams,San,,,,False,False
+10,2025-11-09,,New England Patriots,Tampa,,,,False,False
+10,2025-11-09,,New Orleans Saints,Carolina,,,,False,False
+10,2025-11-09,,New York Giants,Chicago,,,,False,False
+10,2025-11-09,,Pittsburgh Steelers,Los,,,,False,False
+10,2025-11-10,,Philadelphia Eagles,Green,,,,False,False
+11,2025-11-13,,New York Jets,New,,,,False,False
+11,2025-11-16,,Baltimore Ravens,Cleveland,,,,False,False
+11,2025-11-16,,Carolina Panthers,Atlanta,,,,False,False
+11,2025-11-16,,Chicago Bears,Minnesota,,,,False,False
+11,2025-11-16,,Cincinnati Bengals,Pittsburgh,,,,False,False
+11,2025-11-16,,Detroit Lions,Philadelphia,,,,False,False
+11,2025-11-16,,Green Bay Packers,New,,,,False,False
+11,2025-11-16,,Houston Texans,Tennessee,,,,False,False
+11,2025-11-16,,Kansas City Chiefs,Denver,,,,False,False
+11,2025-11-16,,Los Angeles Chargers,Jacksonville,,,,False,False
+11,2025-11-16,,Seattle Seahawks,Los,,,,False,False
+11,2025-11-16,,Tampa Bay Buccaneers,Buffalo,,,,False,False
+11,2025-11-16,,Washington Commanders,Miami,,,,False,False
+11,2025-11-16,,ers,Arizona,,,,False,False
+11,2025-11-17,,Dallas Cowboys,Las,,,,False,False
+12,2025-11-20,,Buffalo Bills,Houston,,,,False,False
+12,2025-11-23,,Atlanta Falcons,New,,,,False,False
+12,2025-11-23,,Cleveland Browns,Las,,,,False,False
+12,2025-11-23,,Indianapolis Colts,Kansas,,,,False,False
+12,2025-11-23,,Jacksonville Jaguars,Arizona,,,,False,False
+12,2025-11-23,,Minnesota Vikings,Green,,,,False,False
+12,2025-11-23,,New England Patriots,Cincinnati,,,,False,False
+12,2025-11-23,,New York Giants,Detroit,,,,False,False
+12,2025-11-23,,New York Jets,Baltimore,,,,False,False
+12,2025-11-23,,Philadelphia Eagles,Dallas,,,,False,False
+12,2025-11-23,,Pittsburgh Steelers,Chicago,,,,False,False
+12,2025-11-23,,Seattle Seahawks,Tennessee,,,,False,False
+12,2025-11-23,,Tampa Bay Buccaneers,Los,,,,False,False
+12,2025-11-24,,Carolina Panthers,San,,,,False,False
+13,2025-11-27,,Cincinnati Bengals,Baltimore,,,THANKSGIVING,False,False
+13,2025-11-27,,Green Bay Packers,Detroit,,,THANKSGIVING,False,False
+13,2025-11-27,,Kansas City Chiefs,Dallas,,,THANKSGIVING,False,False
+13,2025-11-28,,Chicago Bears,Philadelphia,,,,False,False
+13,2025-11-30,,Arizona Cardinals,Tampa,,,,False,False
+13,2025-11-30,,Atlanta Falcons,New,,,,False,False
+13,2025-11-30,,Buffalo Bills,Pittsburgh,,,,False,False
+13,2025-11-30,,Denver Broncos,Washington,,,,False,False
+13,2025-11-30,,Houston Texans,Indianapolis,,,,False,False
+13,2025-11-30,,Jacksonville Jaguars,Tennessee,,,,False,False
+13,2025-11-30,,Las Vegas Raiders,Los,,,,False,False
+13,2025-11-30,,Los Angeles Rams,Carolina,,,,False,False
+13,2025-11-30,,Minnesota Vikings,Seattle,,,,False,False
+13,2025-11-30,,New Orleans Saints,Miami,,,,False,False
+13,2025-11-30,,ers,Cleveland,,,,False,False
+13,2025-12-01,,New York Giants,New,,,,False,False
+14,2025-12-04,,Dallas Cowboys,Detroit,,,,False,False
+14,2025-12-07,,Chicago Bears,Green,,,,False,False
+14,2025-12-07,,Cincinnati Bengals,Buffalo,,,,False,False
+14,2025-12-07,,Denver Broncos,Las,,,,False,False
+14,2025-12-07,,Houston Texans,Kansas,,,,False,False
+14,2025-12-07,,Indianapolis Colts,Jacksonville,,,,False,False
+14,2025-12-07,,Los Angeles Rams,Arizona,,,,False,False
+14,2025-12-07,,Miami Dolphins,New,,,,False,False
+14,2025-12-07,,New Orleans Saints,Tampa,,,,False,False
+14,2025-12-07,,Pittsburgh Steelers,Baltimore,,,,False,False
+14,2025-12-07,,Seattle Seahawks,Atlanta,,,,False,False
+14,2025-12-07,,Tennessee Titans,Cleveland,,,,False,False
+14,2025-12-07,,Washington Commanders,Minnesota,,,,False,False
+14,2025-12-08,,Philadelphia Eagles,Los,,,,False,False
+15,2025-12-11,,Atlanta Falcons,Tampa,,,,False,False
+15,2025-12-14,,Arizona Cardinals,Houston,,,,False,False
+15,2025-12-14,,Baltimore Ravens,Cincinnati,,,,False,False
+15,2025-12-14,,Buffalo Bills,New,,,,False,False
+15,2025-12-14,,Carolina Panthers,New,,,,False,False
+15,2025-12-14,,Cleveland Browns,Chicago,,,,False,False
+15,2025-12-14,,Detroit Lions,Los,,,,False,False
+15,2025-12-14,,Green Bay Packers,Denver,,,,False,False
+15,2025-12-14,,Indianapolis Colts,Seattle,,,,False,False
+15,2025-12-14,,Las Vegas Raiders,Philadelphia,,,,False,False
+15,2025-12-14,,Los Angeles Chargers,Kansas,,,,False,False
+15,2025-12-14,,Minnesota Vikings,Dallas,,,,False,False
+15,2025-12-14,,New York Jets,Jacksonville,,,,False,False
+15,2025-12-14,,Tennessee Titans,San,,,,False,False
+15,2025-12-14,,Washington Commanders,New,,,,False,False
+15,2025-12-15,,Miami Dolphins,Pittsburgh,,,,False,False
+16,2025-12-18,,Los Angeles Rams,Seattle,,,,False,False
+16,2025-12-20,,Green Bay Packers,Chicago,,,,False,False
+16,2025-12-20,,Philadelphia Eagles,Washington,,,,False,False
+16,2025-12-21,,Atlanta Falcons,Arizona,,,,False,False
+16,2025-12-21,,Buffalo Bills,Cleveland,,,,False,False
+16,2025-12-21,,Cincinnati Bengals,Miami,,,,False,False
+16,2025-12-21,,Jacksonville Jaguars,Denver,,,,False,False
+16,2025-12-21,,Kansas City Chiefs,Tennessee,,,,False,False
+16,2025-12-21,,Las Vegas Raiders,Houston,,,,False,False
+16,2025-12-21,,Los Angeles Chargers,Dallas,,,,False,False
+16,2025-12-21,,Minnesota Vikings,New,,,,False,False
+16,2025-12-21,,New England Patriots,Baltimore,,,,False,False
+16,2025-12-21,,New York Jets,New,,,,False,False
+16,2025-12-21,,Pittsburgh Steelers,Detroit,,,,False,False
+16,2025-12-21,,Tampa Bay Buccaneers,Carolina,,,,False,False
+16,2025-12-22,,ers,Indianapolis,,,,False,False
+17,2025-12-25,,Dallas Cowboys,Washington,,,,False,False
+17,2025-12-25,,Denver Broncos,Kansas,,,,False,False
+17,2025-12-25,,Detroit Lions,Minnesota,,,,False,False
+17,2025-12-27,,Arizona Cardinals,Cincinnati,,,,False,False
+17,2025-12-27,,Baltimore Ravens,Green,,,,False,False
+17,2025-12-27,,Houston Texans,Los,,,,False,False
+17,2025-12-27,,New York Giants,Las,,,,False,False
+17,2025-12-27,,Seattle Seahawks,Carolina,,,,False,False
+17,2025-12-28,,Chicago Bears,San,,,,False,False
+17,2025-12-28,,Jacksonville Jaguars,Indianapolis,,,,False,False
+17,2025-12-28,,New England Patriots,New,,,,False,False
+17,2025-12-28,,New Orleans Saints,Tennessee,,,,False,False
+17,2025-12-28,,Philadelphia Eagles,Buffalo,,,,False,False
+17,2025-12-28,,Pittsburgh Steelers,Cleveland,,,,False,False
+17,2025-12-28,,Tampa Bay Buccaneers,Miami,,,,False,False
+17,2025-12-29,,Los Angeles Rams,Atlanta,,,,False,False
+18,2025-01-03,,Arizona Cardinals,Los,,,,False,False
+18,2025-01-03,,Baltimore Ravens,Pittsburgh,,,,False,False
+18,2025-01-03,,Carolina Panthers,Tampa,,,,False,False
+18,2025-01-03,,Cleveland Browns,Cincinnati,,,,False,False
+18,2025-01-03,,Dallas Cowboys,New,,,,False,False
+18,2025-01-03,,Detroit Lions,Chicago,,,,False,False
+18,2025-01-03,,Green Bay Packers,Minnesota,,,,False,False
+18,2025-01-03,,Indianapolis Colts,Houston,,,,False,False
+18,2025-01-03,,Kansas City Chiefs,Las,,,,False,False
+18,2025-01-03,,Los Angeles Chargers,Denver,,,,False,False
+18,2025-01-03,,Miami Dolphins,New,,,,False,False
+18,2025-01-03,,New Orleans Saints,Atlanta,,,,False,False
+18,2025-01-03,,New York Jets,Buffalo,,,,False,False
+18,2025-01-03,,Seattle Seahawks,San,,,,False,False
+18,2025-01-03,,Tennessee Titans,Jacksonville,,,,False,False
+18,2025-01-03,,Washington Commanders,Philadelphia,,,,False,False
