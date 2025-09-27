@@ -12,7 +12,53 @@ DATA_DIR = Path("data")
 VERS_DIR = DATA_DIR / "versioned_weeks"
 ROOT_MASTER = DATA_DIR / "season_master_tracker.csv"
 
-# ---------- Helpers ----------
+# --- Lock Week helpers ---
+def load_master(path: Path) -> pd.DataFrame:
+    if path.exists():
+        try:
+            return pd.read_csv(path)
+        except Exception:
+            return pd.DataFrame()
+    return pd.DataFrame()
+
+def normalize_final(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Expected columns for Final merge:
+      Week | Matchup | Adjusted ML | Final Score | ML Result | ATS Result | Notes
+    We’ll be flexible and map common variants.
+    """
+    if df.empty:
+        return df.copy()
+    rename = {
+        "Pick": "Adjusted ML",
+        "Adjusted Pick": "Adjusted ML",
+        "Result": "ML Result"
+    }
+    out = df.rename(columns={k:v for k,v in rename.items() if k in df.columns}).copy()
+
+    # ensure columns exist
+    for col in ["Week","Matchup","Adjusted ML","Final Score","ML Result","ATS Result","Notes"]:
+        if col not in out.columns:
+            out[col] = ""  # fill missing
+    # if Week missing or blank, set to current sidebar week
+    if (out["Week"] == "").all() or (out["Week"].isna().all()):
+        out["Week"] = week
+    # reorder minimal set
+    keep = ["Week","Matchup","Adjusted ML","Final Score","ML Result","ATS Result","Notes"]
+    return out[keep]
+
+def merge_into_master(master_df: pd.DataFrame, week_final_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Merge/replace WeekX rows by Matchup.
+    """
+    if master_df.empty:
+        return week_final_df.copy()
+    # Remove existing rows for this week/matchups about to insert
+    keys = set(zip(week_final_df["Week"].astype(str), week_final_df["Matchup"].astype(str)))
+    mask = master_df.apply(lambda r: (str(r.get("Week","")), str(r.get("Matchup",""))) in keys, axis=1)
+    master_df = master_df.loc[~mask].copy()
+    # Append new finals
+    return pd.concat([master_df, week_final_df], ignore_index=True)# ---------- Helpers ----------
 def exists(p: Path) -> bool:
     try:
         return p.exists()
@@ -225,6 +271,55 @@ with tab_guard:
 
 # ---------- Season Master (read-only) ----------
 st.divider()
+st.subheader("🔒 Lock Week & Update Season Master")
+
+# Check the key files for this week
+final_df_raw = load_csv(final_p)
+adjusted_df_raw = load_csv(adjusted_p)
+
+if final_df_raw.empty:
+    st.info("To lock a week, please provide `WeekX_Final.csv` in `data/versioned_weeks/`.")
+else:
+    # Normalize Final and show preview
+    week_final_df = normalize_final(final_df_raw)
+    st.write("Preview — rows that will be merged into Season Master:")
+    st.dataframe(week_final_df, use_container_width=True)
+
+    # Safety checks
+    problems = []
+    if "Week" not in week_final_df.columns or week_final_df["Week"].isna().all():
+        problems.append("Missing `Week` column/values.")
+    if "Matchup" not in week_final_df.columns:
+        problems.append("Missing `Matchup` column.")
+    if ROOT_MASTER.exists() and not ROOT_MASTER.is_file():
+        problems.append("Season master path exists but is not a file.")
+    if not exists(adjusted_p):
+        problems.append("Adjusted file is missing (it’s best practice to have Draft → Adjusted → Final).")
+
+    if problems:
+        st.error("Cannot lock this week due to:\n- " + "\n- ".join(problems))
+    else:
+        if st.button(f"Lock Week {week} and Update Season Master", type="primary"):
+            # Load current master
+            master_df = load_master(ROOT_MASTER)
+            # Merge/replace Week X rows
+            merged = merge_into_master(master_df, week_final_df)
+
+            # Try to write master
+            try:
+                merged.to_csv(ROOT_MASTER, index=False)
+                # Quick ML record summary
+                if "ML Result" in merged.columns:
+                    ml = merged["ML Result"].astype(str).str.strip()
+                    total = (ml == "✅").sum() + (ml == "❌").sum()
+                    wins = (ml == "✅").sum()
+                    pct = (wins/total) if total else 0.0
+                    st.success(f"Locked Week {week} and updated Season Master. "
+                               f"Current season ML record: **{wins}-{total-wins} ({pct:.1%})**")
+                else:
+                    st.success(f"Locked Week {week} and updated Season Master.")
+            except Exception as e:
+                st.error(f"Failed to write season master: {e}")st.divider()
 st.header("📈 Season Master Tracker (read-only)")
 if ROOT_MASTER.exists():
     try:
