@@ -371,3 +371,45 @@ if ROOT_MASTER.exists():
         st.error("Could not read season master: {}".format(e))
 else:
     st.info("Add `data/season_master_tracker.csv` to show season-to-date results.")
+# -------------------- Diagnostics --------------------
+st.divider()
+with st.expander("🩺 Diagnostics"):
+    st.write("File presence & basic schema check for the selected week.")
+    paths = {
+        "Draft": draft_p,
+        "Adjusted": adjusted_p,
+        "Final": final_p,
+        "Odds": odds_p,
+        "Injuries": inj_p,
+        "Guardrails": guard_p,
+        "Season Master": ROOT_MASTER,
+    }
+    for name, p in paths.items():
+        ok = p.exists()
+        st.write(f"{'✅' if ok else '❌'} {name}: `{p}`")
+
+    def try_read(p):
+        try:
+            return pd.read_csv(p)
+        except Exception as e:
+            st.error(f"Read error on {p}: {e}")
+            return pd.DataFrame()
+
+    # Minimal schema checks
+    checks = {
+        "Adjusted": (adjusted_p, ["Matchup","Adjusted ML","Confidence %","Guardrail Note"]),
+        "Final": (final_p, ["Week","Matchup","Adjusted ML","Final Score","ML Result"]),
+        "Odds": (odds_p, ["Matchup","Spread","Over/Under"]),
+        "Draft": (draft_p, ["Matchup","Away","Home"]),
+    }
+    for label, (p, cols) in checks.items():
+        if p.exists():
+            df = try_read(p)
+            if df.empty:
+                st.warning(f"{label}: file is empty.")
+            else:
+                missing = [c for c in cols if c not in df.columns]
+                if missing:
+                    st.warning(f"{label}: missing columns {missing}. Present: {list(df.columns)}")
+                else:
+                    st.success(f"{label}: OK ({len(df)} rows)")
