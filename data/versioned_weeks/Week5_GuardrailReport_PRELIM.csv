@@ -1,0 +1,15 @@
+Matchup,Checks Run,Triggered,Effect,Confidence Before,Confidence After,Notes
+49ers vs Rams,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog","Divisional, Situational(Primetime)",Caution: stricter confidence threshold,,,Divisional matchup → volatility ↑; require ≥80% confidence; Thursday night → short rest
+Vikings vs Browns,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Situational(Rest/Travel),Caution: stricter confidence threshold,,,London neutral site → time-zone factor
+Raiders vs Colts,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Jets vs Saints,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Cowboys vs Giants,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Divisional,Caution: stricter confidence threshold,,,Divisional matchup → volatility ↑; require ≥80% confidence
+Broncos vs Eagles,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Dolphins vs Panthers,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Texans vs Ravens,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Titans vs Cardinals,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Buccaneers vs Seahawks,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Situational(Rest/Travel),Caution: stricter confidence threshold,,,Long travel / body-clock disadvantage
+Lions vs Bengals,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,,,
+Commanders vs Chargers,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Situational(Rest/Travel),Caution: stricter confidence threshold,,,Long travel / body-clock disadvantage
+Patriots vs Bills,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Situational(Primetime),Caution: stricter confidence threshold,,,Sunday Night Football
+Chiefs vs Jaguars,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Situational(Primetime),Caution: stricter confidence threshold,,,Monday Night Football
