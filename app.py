@@ -2,10 +2,6 @@
 # app.py — NFL Picks Tracker (Guardrail-Enforced + Auto-Confidence Override)
 # Compat build: works on Python 3.7+
 
-import io
-from pathlib import Path
-import pandas as pd
-import streamlit as st
 import pandas as pd
 import numpy as np
 from pathlib import Path
