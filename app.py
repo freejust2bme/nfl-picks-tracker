@@ -48,7 +48,7 @@ week5_odds = pd.read_csv(week5_odds_url)
 
 # --- Example checks ---
 print("Schedule shape:", schedule.shape)
-print("Week 5 odds shape:", week5_odds.shape
+print("Week 5 odds shape:", week5_odds.shape)
 
 # ------------------------ Basic setup ------------------------
 st.set_page_config(page_title="NFL Picks — ML Guardrails", layout="wide")
