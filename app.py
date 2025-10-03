@@ -210,16 +210,23 @@ def build_tickets_from_board(board, week:int):
     view = tix_df.groupby("TicketName", as_index=False).apply(summarize) if not tix_df.empty else pd.DataFrame()
     return tix_df, view
 
+# REPLACE the existing write_week_outputs() with this version
 def write_week_outputs(week:int, tix_df, view_df):
+    """Write detailed legs + compact ticket cards. Ensures folder exists."""
+    out_dir = Path("data/versioned_weeks")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     detailed_path = Path(f"Week{week}_Tickets_DETAILED.csv")
     tix_df.to_csv(detailed_path, index=False)
 
-    view_path = APP_DATA_DIR / f"Week{week}_Tickets_VIEW.csv"
+    view_path = out_dir / f"Week{week}_Tickets_VIEW.csv"
+    # ---- fix: make sure we use the function arg 'view_df' ----
     view_df.to_csv(view_path, index=False)
 
     simple_path = Path(f"Week{week}_Tickets.csv")
     simple = view_df.rename(columns={"TicketName":"Ticket","Payout_$20":"PotentialReturn"})
     simple.to_csv(simple_path, index=False)
+
     return detailed_path, view_path, simple_path
 
 def one_click_refresh(week:int):
