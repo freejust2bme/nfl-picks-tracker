@@ -30,12 +30,6 @@ import streamlit as st
 schedule_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/nfl_2025_master_schedule.csv"
 week5_odds_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/week_5_odds_template.csv"
 
-# Load full season schedule
-schedule = pd.read_csv(schedule_url)
-
-# Load Week 5 odds
-week5_odds = pd.read_csv(week5_odds_url)
-
 # --- Example checks ---
 print("Schedule shape:", schedule.shape)
 print("Week 5 odds shape:", week5_odds.shape)
