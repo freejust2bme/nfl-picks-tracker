@@ -24,9 +24,17 @@ import numpy as np
 from pathlib import Path
 import datetime as dt
 import streamlit as st
-
 # --- Load NFL schedule + Week 5 odds from GitHub repo ---
-import pandas as pd
+
+# GitHub raw file URLs
+schedule_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/nfl_2025_master_schedule.csv"
+week5_odds_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/week_5_odds_template.csv"
+
+# Load full season schedule
+schedule = pd.read_csv(schedule_url)
+
+# Load Week 5 odds
+week5_odds = pd.read_csv(week5_odds_url)
 
 # GitHub raw file URLs (your repo path is freejust2bme/nfl-picks-repo)
 schedule_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/nfl_2025_master_schedule.csv"
