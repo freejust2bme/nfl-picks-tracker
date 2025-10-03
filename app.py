@@ -2,16 +2,16 @@
 # Streamlit NFL Picks (ML-only) — with guardrail badges + one-click weekly refresh
 # -------------------------------------------------------------------------------
 # Files expected (CSV):
-#   data/versioned_weeks/nfl_2025_week{W}_schedule.csv
+#   data/nfl_2025_week{W}_schedule.csv
 #     -> GameID,Week,HomeTeam,AwayTeam,Site(optional),StartET(optional)
-#   data/versioned_weeks/nfl_2025_week{W}_odds.csv
+#   data/nfl_2025_week{W}_odds.csv
 #     -> GameID,Market,Team,Price,Line,Book(optional)   (use Market="ML" rows)
-#   data/versioned_weeks/Week{W}_Injuries.csv
+#   data/Week{W}_Injuries.csv
 #     -> Team,Player,Position,Injury,GameStatus,Notes,LastUpdated
 #
 # Outputs (written on refresh):
 #   Week{W}_Tickets_DETAILED.csv  (legs with "PickTeam over Opponent — ML (-xxx)" + badges)
-#   data/versioned_weeks/Week{W}_Tickets_VIEW.csv  (compact per-ticket card)
+#   data/Week{W}_Tickets_VIEW.csv  (compact per-ticket card)
 #   Week{W}_Tickets.csv           (simple summary; optional for other tabs)
 #
 # If something broke after last update, this file is a safe reset:
