@@ -28,11 +28,7 @@ import streamlit as st
 
 # GitHub raw file URLs
 schedule_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/nfl_2025_master_schedule.csv"
-week5_odds_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/week_5_odds_template.csv"
-
-# --- Example checks ---
-print("Schedule shape:", schedule.shape)
-print("Week 5 odds shape:", week5_odds.shape)
+week5_odds_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/
 
 # ------------------------ Basic setup ------------------------
 st.set_page_config(page_title="NFL Picks — ML Guardrails", layout="wide")
