@@ -6,7 +6,154 @@ import io
 from pathlib import Path
 import pandas as pd
 import streamlit as st
+import pandas as pd
+import numpy as np
+from pathlib import Path
+import datetime as dt
+import streamlit as st
 
+DATA_DIR = Path("versioned_weeks")         # fallback path your app already uses
+APP_DATA_DIR = Path("data/versioned_weeks")  # some tabs read from here
+APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# ---------- Config ----------
+WEEK = 5  # set this to whatever week you're refreshing
+SCHEDULE_CSV = APP_DATA_DIR / f"nfl_2025_week{WEEK}_schedule.csv"
+ODDS_CSV     = APP_DATA_DIR / f"nfl_2025_week{WEEK}_odds.csv"
+INJ_CSV      = APP_DATA_DIR / f"Week{WEEK}_Injuries.csv"
+INJ_VIEW_CSV = APP_DATA_DIR / f"Week{WEEK}_Injuries_VIEW.csv"
+
+TIX_DETAILED = Path(f"Week{WEEK}_Tickets_DETAILED.csv")           # for Tickets tab clarity
+TIX_SIMPLE   = Path(f"Week{WEEK}_Tickets.csv")                    # simple summary (optional)
+TIX_VIEW     = APP_DATA_DIR / f"Week{WEEK}_Tickets_VIEW.csv"      # compact tickets view used by app
+
+# ---------- Helpers ----------
+def ml_to_decimal(ml):
+    ml = float(ml)
+    return 1 + (ml/100.0) if ml > 0 else 1 + (100.0/abs(ml))
+
+def implied_prob_from_ml(ml):
+    ml = float(ml)
+    return (100/(ml+100)) if ml > 0 else (abs(ml)/(abs(ml)+100))
+
+def now_str():
+    return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# Guardrails (simple, transparent; tweak as you like)
+def guardrail_row(row, injuries_df):
+    """Returns one of: 'Anchor','Safe','Moderate','Pass'."""
+    team = row["PickTeam"]
+    ml   = float(row["PriceML"])
+    market = row.get("Market", "ML")
+
+    # 1) Injury guardrail
+    # If key starters OUT/Inactive -> downgrade. We’ll mark Out/Doubtful/IR as red flags.
+    team_inj = injuries_df[injuries_df["Team"].str.lower()==team.lower()]
+    has_out   = (team_inj["GameStatus"].str.contains("Out", case=False, na=False) | 
+                 team_inj["GameStatus"].str.contains("Doubtful", case=False, na=False)).any()
+
+    # 2) Situational guardrails (examples)
+    # - Primetime volatility: if market is spread/total and primetime, be stricter (you can add a Primetime column in schedule later)
+    # - London/Mexico (neutral site) -> downgrade
+    neutral = str(row.get("Site","")).lower() in {"neutral","london","mexico","brazil"}
+
+    # 3) Sharp line guardrail (very light touch here)
+    # If ML shorter than -170 AND opponent public dog (not tracked here), skip. We’ll approximate: any road fav with -170 to -250 -> moderate.
+    is_road = str(row.get("PickTeamLocation","")).lower()=="away"
+    moderate_border = (ml <= -170 and ml >= -260 and is_road)
+
+    # Classify
+    if has_out:
+        return "Pass"
+    if neutral:
+        return "Moderate"
+    if moderate_border:
+        return "Moderate"
+    # Very strong anchors by price
+    if ml <= -500:
+        return "Anchor"
+    if ml <= -250:
+        return "Safe"
+    # Otherwise
+    return "Moderate"
+
+def build_ticket_rows(picks, ticket_name):
+    """picks: list of dicts with keys: HomeTeam, AwayTeam, PickTeam, PriceML, Market, Line(optional)."""
+    rows = []
+    for p in picks:
+        display = f"{p['PickTeam']} over {p['HomeTeam'] if p['PickTeam']==p['AwayTeam'] else p['AwayTeam']} — {p.get('Market','ML')} ({p['PriceML']})"
+        rows.append({
+            "TicketName": ticket_name,
+            "Week": WEEK,
+            "HomeTeam": p["HomeTeam"],
+            "AwayTeam": p["AwayTeam"],
+            "PickTeam": p["PickTeam"],
+            "Market": p.get("Market","ML"),
+            "Line": p.get("Line",""),
+            "PriceML": str(p["PriceML"]),
+            "Display": display
+        })
+    return rows
+
+def write_csv(df: pd.DataFrame, path: Path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(path, index=False)
+
+# ---------- One-click refresh ----------
+def refresh_week():
+    # 0) Load inputs (be forgiving if files aren’t there yet)
+    inj = pd.read_csv(INJ_CSV) if INJ_CSV.exists() else pd.DataFrame(columns=["Team","Player","Position","Injury","GameStatus","Notes","LastUpdated"])
+    # Simple VIEW file for injuries
+    inj_view = inj[["Team","Player","Position","GameStatus"]].copy() if not inj.empty else pd.DataFrame(columns=["Team","Player","Position","GameStatus"])
+    write_csv(inj_view, INJ_VIEW_CSV)
+
+    # 1) Build the safest tickets (these are the same logic we agreed on)
+    # You can load schedule/odds here to auto-map home/away; for now we keep the explicit pairs we used.
+    ticket1 = [
+        {"HomeTeam":"Titans","AwayTeam":"Cardinals","PickTeam":"Cardinals","PriceML":-440,"Market":"ML"},
+        {"HomeTeam":"Browns","AwayTeam":"Lions","PickTeam":"Lions","PriceML":-590,"Market":"ML"},
+    ]
+    ticket2 = ticket1 + [
+        {"HomeTeam":"Bills","AwayTeam":"Patriots","PickTeam":"Bills","PriceML":-1600,"Market":"ML"},
+    ]
+    ticket3 = ticket2 + [
+        {"HomeTeam":"Titans","AwayTeam":"Texans","PickTeam":"Texans","PriceML":-390,"Market":"ML"},
+    ]
+
+    all_rows = []
+    all_rows += build_ticket_rows(ticket1, "Ticket 1 - Anchor 2-Leg")
+    all_rows += build_ticket_rows(ticket2, "Ticket 2 - Safe 3-Leg")
+    all_rows += build_ticket_rows(ticket3, "Ticket 3 - Safe 4-Leg")
+    tix_df = pd.DataFrame(all_rows)
+
+    # 2) Apply guardrails per leg
+    if not tix_df.empty:
+        tix_df["GuardrailClass"] = tix_df.apply(lambda r: guardrail_row(r, inj), axis=1)
+        # Drop anything classified as Pass (injury red flag)
+        tix_df = tix_df[tix_df["GuardrailClass"]!="Pass"].reset_index(drop=True)
+
+    # 3) Compute per-ticket summaries (decimal odds & payout examples)
+    def ticket_summary(g):
+        decs = [ml_to_decimal(x) for x in g["PriceML"].astype(float)]
+        dec_prod = float(np.prod(decs)) if decs else 1.0
+        payout_20 = round(20*dec_prod,2)
+        return pd.Series({
+            "Legs": len(g),
+            "DecimalOdds": round(dec_prod,3),
+            "Payout_$20": payout_20,
+            "Updated": now_str()
+        })
+    tix_sum = tix_df.groupby("TicketName", as_index=False).apply(ticket_summary)
+
+    # 4) Write outputs
+    write_csv(tix_df, TIX_DETAILED)        # explicit “PickTeam over Opponent — ML” rows
+    write_csv(tix_sum, TIX_VIEW)           # compact card the app can show
+    # optional simple file
+    simple = tix_sum.rename(columns={"TicketName":"Ticket","Payout_$20":"PotentialReturn"})
+    write_csv(simple, TIX_SIMPLE)
+
+    return tix_df, tix_sum
 st.set_page_config(page_title="NFL Picks Tracker", layout="wide")
 st.title("🏈 NFL Picks Tracker")
 
