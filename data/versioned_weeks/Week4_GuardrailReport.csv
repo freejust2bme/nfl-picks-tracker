@@ -1,4 +1,17 @@
-Matchup,Guardrail Applied,Effect
-Commanders @ Falcons,Injury guardrail triggered,Confidence dropped to 55%
-Jaguars @ 49ers,Injury guardrail (Bosa out),Flip to Jaguars; conf 55%
-Packers @ Cowboys,Injury guardrail (Lamb out),Flip to Packers; conf 55%
+Matchup,Checks Run,Triggered,Effect,Confidence Before,Confidence After,Notes
+Seahawks @ Cardinals,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog","Divisional, History(10y)",Downgrade 10 pts; recommend flip to Seahawks ML,52,42,SEA historically strong vs ARI; divisional volatility
+Vikings @ Steelers,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Commanders @ Falcons,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Injury,Confidence reduction already applied,55,55,McLaurin questionable → reduced confidence
+Browns @ Lions,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,72,72,
+Titans @ Texans,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Eagles @ Buccaneers,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,68,68,
+Saints @ Bills,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,80,80,
+Panthers @ Patriots,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Chargers @ Giants,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Jaguars @ 49ers,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Injury,Flip applied pre-report,55,55,Bosa out → flip to JAX already reflected
+Colts @ Rams,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Bears @ Raiders,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,57,57,
+Ravens @ Chiefs,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Packers @ Cowboys,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",Injury,Flip applied pre-report,55,55,CeeDee Lamb out → flip to GB already reflected
+Jets @ Dolphins,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,62,62,
+Bengals @ Broncos,"Injury, Divisional, History(10y), Sharp/Freeze, Situational(Rest/Travel), MNF Home-Dog",None,No guardrail triggers,72,72,

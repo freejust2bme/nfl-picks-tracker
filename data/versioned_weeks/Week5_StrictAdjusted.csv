@@ -1,0 +1,15 @@
+Matchup,Adjusted ML (STRICT),Confidence %,Reason
+49ers vs Rams,PASS,78,Divisional volatility requires ≥80
+Vikings vs Browns,Vikings ML,76,STRICT OK
+Raiders vs Colts,Colts ML,82,STRICT OK
+Jets vs Saints,PASS,74,Confidence < 75
+Cowboys vs Giants,PASS,75,Divisional volatility requires ≥80
+Broncos vs Eagles,Eagles ML,78,STRICT OK
+Dolphins vs Panthers,PASS,,No safe edge (seeded PASS)
+Texans vs Ravens,Texans ML,80,STRICT OK
+Titans vs Cardinals,PASS,74,Confidence < 75
+Buccaneers vs Seahawks,Seahawks ML,76,STRICT OK
+Lions vs Bengals,Lions ML,75,STRICT OK
+Commanders vs Chargers,Chargers ML,78,STRICT OK
+Patriots vs Bills,Bills ML,79,STRICT OK
+Chiefs vs Jaguars,Chiefs ML,80,STRICT OK
