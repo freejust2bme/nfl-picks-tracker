@@ -125,14 +125,18 @@ with st.sidebar:
     st.markdown("### Data Source")
     st.caption("Master schedule + weekly odds from GitHub (raw) with local fallback.")
 
-# --- WEEK SELECTOR ---
-col_top = st.columns([1,1,2,2])
-with col_top[0]:
-    week = st.number_input("Select Week", min_value=1, max_value=22, value=DEFAULT_WEEK, step=1)
+# --- WEEK SELECTOR (dropdown version) ---
+available_weeks = list(range(1, 19))
+week = st.selectbox(
+    "📅 Select Week",
+    available_weeks,
+    index=available_weeks.index(DEFAULT_WEEK) if DEFAULT_WEEK in available_weeks else 0,
+    help="Select the week to view matchups and odds."
+)
 
-with col_top[1]:
-    if st.button("Refresh (load from GitHub)"):
-        st.experimental_rerun()
+# Optional: manual refresh button
+if st.button("🔄 Refresh This Week"):
+    st.experimental_rerun()
 
 # ----------------------------- LOAD DATA -----------------------------
 # Schedule
