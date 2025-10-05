@@ -125,15 +125,6 @@ with st.sidebar:
     st.markdown("### Data Source")
     st.caption("Master schedule + weekly odds from GitHub (raw) with local fallback.")
 
-# --- WEEK SELECTOR (dropdown version) ---
-available_weeks = list(range(1, 19))
-week = st.selectbox(
-    "📅 Select Week",
-    available_weeks,
-    index=available_weeks.index(DEFAULT_WEEK) if DEFAULT_WEEK in available_weeks else 0,
-    help="Select the week to view matchups and odds."
-)
-
 # Optional: manual refresh button
 if st.button("🔄 Refresh This Week"):
     st.experimental_rerun()
@@ -147,7 +138,79 @@ try:
 except Exception as e:
     st.error(f"Failed to load schedule.\n\n{e}")
     st.stop()
+# --- Auto-detect current NFL week from the schedule, with a dropdown override ---
 
+from datetime import datetime, timezone
+import pandas as pd
+
+def _parse_kickoff_dt(row: pd.Series) -> pd.Timestamp | None:
+    """Return a timezone-naive UTC timestamp for the game's kickoff if possible."""
+    # Prefer an ISO datetime column if present
+    if "kickoff_iso" in row and pd.notna(row["kickoff_iso"]) and str(row["kickoff_iso"]).strip():
+        try:
+            dt_iso = pd.to_datetime(str(row["kickoff_iso"]), utc=True, errors="coerce")
+            if pd.notna(dt_iso):
+                return dt_iso.tz_convert("UTC").tz_localize(None)
+        except Exception:
+            pass
+    # Fallback to separate date/time columns
+    date_str = str(row.get("date", "")).strip()
+    time_str = str(row.get("time", "")).strip()
+    if date_str:
+        try:
+            # Try combining date + time; if time missing, assume noon local
+            when = f"{date_str} {time_str}" if time_str else date_str
+            dt_local = pd.to_datetime(when, errors="coerce")
+            if pd.notna(dt_local):
+                # Treat as naive local → convert to UTC-naive for comparison
+                return pd.to_datetime(dt_local).tz_localize(None)
+        except Exception:
+            return None
+    return None
+
+def detect_current_week(schedule_df: pd.DataFrame, fallback_week: int = 5) -> int:
+    """Pick the week we're in based on today's date relative to the schedule."""
+    df = schedule_df.copy()
+    # Build a kickoff datetime column if we can
+    df["kickoff_dt"] = df.apply(_parse_kickoff_dt, axis=1)
+
+    today = datetime.utcnow()  # compare in UTC-naive
+    # Group by week to get min/max dates per week
+    wk_bounds = (
+        df.dropna(subset=["kickoff_dt"])
+          .groupby("week")["kickoff_dt"]
+          .agg(["min", "max"])
+          .sort_index()
+    )
+
+    if wk_bounds.empty:
+        return fallback_week
+
+    # If today falls inside a week's span, pick that week
+    inside = wk_bounds[(wk_bounds["min"] <= today) & (today <= wk_bounds["max"])]
+    if not inside.empty:
+        return int(inside.index[0])
+
+    # Otherwise choose the next upcoming week, or last completed if all past
+    future = wk_bounds[wk_bounds["min"] > today]
+    if not future.empty:
+        return int(future.index[0])
+
+    return int(wk_bounds.index.max())
+
+# Figure out the best default, then show a dropdown to override
+AUTO_WEEK = detect_current_week(schedule, fallback_week=DEFAULT_WEEK)
+available_weeks = sorted([int(w) for w in schedule["week"].dropna().unique() if str(w).isdigit()])
+
+week = st.selectbox(
+    "📅 Select Week",
+    available_weeks,
+    index=available_weeks.index(AUTO_WEEK) if AUTO_WEEK in available_weeks else 0,
+    help="Auto-selected based on the schedule's dates. You can override anytime."
+)
+
+if st.button("🔄 Refresh This Week"):
+    st.experimental_rerun()
 # Odds for selected week
 ODDS_URL = odds_url_for_week(week)
 try:
