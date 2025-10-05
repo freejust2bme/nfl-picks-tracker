@@ -126,9 +126,8 @@ with st.sidebar:
     st.caption("Master schedule + weekly odds from GitHub (raw) with local fallback.")
 
 # Optional: manual refresh button
-if st.button("🔄 Refresh This Week"):
+if st.button("🔄 Refresh This Week", key="refresh_week_btn"):
     st.experimental_rerun()
-
 # ----------------------------- LOAD DATA -----------------------------
 # Schedule
 try:
