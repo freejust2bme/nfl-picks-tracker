@@ -1,293 +1,224 @@
-# app.py
-# Streamlit NFL Picks (ML-only) — with guardrail badges + one-click weekly refresh
-# -------------------------------------------------------------------------------
-# Files expected (CSV):
-#   data/nfl_2025_week{W}_schedule.csv
-#     -> GameID,Week,HomeTeam,AwayTeam,Site(optional),StartET(optional)
-#   data/nfl_2025_week{W}_odds.csv
-#     -> GameID,Market,Team,Price,Line,Book(optional)   (use Market="ML" rows)
-#   data/Week{W}_Injuries.csv
-#     -> Team,Player,Position,Injury,GameStatus,Notes,LastUpdated
-#
-# Outputs (written on refresh):
-#   Week{W}_Tickets_DETAILED.csv  (legs with "PickTeam over Opponent — ML (-xxx)" + badges)
-#   data/Week{W}_Tickets_VIEW.csv  (compact per-ticket card)
-#   Week{W}_Tickets.csv           (simple summary; optional for other tabs)
-#
-# If something broke after last update, this file is a safe reset:
-#   - ML-only (no spreads/totals)
-#   - Clear "Display" showing the team you picked
-#   - Guardrail badges: ✅ Anchor/Safe, ⚠️ Moderate, ❌ Pass (Pass legs are filtered out)
+# ----------------------------- NFL PICKS TRACKER (CLEAN) -----------------------------
+# One-source-of-truth: master schedule + weekly odds pulled from GitHub (with local fallback)
+# Guardrails for columns, dups, week mismatches, and helpful errors in the UI.
 
 import pandas as pd
 import numpy as np
 from pathlib import Path
 import datetime as dt
 import streamlit as st
-# --- Load NFL schedule + Week 5 odds from GitHub repo ---
 
-# GitHub raw file URLs
-schedule_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/nfl_2025_master_schedule.csv"
-week5_odds_url = "https://raw.githubusercontent.com/freejust2bme/nfl-picks-repo/main/data/week_5_odds_template.csv"
+# ====== CONFIG (edit these two lines as needed) ======================================
+GITHUB_USER_REPO = "freejust2bme/nfl-picks-repo"  # <— your repo
+DEFAULT_WEEK = 5                                   # <— change this week-to-week (or use selector below)
+# =====================================================================================
 
-# ------------------------ Basic setup ------------------------
-st.set_page_config(page_title="NFL Picks — ML Guardrails", layout="wide")
+RAW_BASE = f"https://raw.githubusercontent.com/{GITHUB_USER_REPO}/main/data"
+SCHEDULE_URL = f"{RAW_BASE}/nfl_2025_master_schedule.csv"
 
-APP_DATA_DIR = Path("data/versioned_weeks")
-APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
+def odds_url_for_week(week: int) -> str:
+    return f"{RAW_BASE}/week_{week}_odds_template.csv"
 
-# ------------------------ Helpers ------------------------
-def ml_to_decimal(ml):
-    ml = float(ml)
-    return 1 + (ml/100.0) if ml > 0 else 1 + (100.0/abs(ml))
+# Local fallbacks (optional; useful if deploying with data/)
+LOCAL_SCHEDULE = Path("data/nfl_2025_master_schedule.csv")
+def local_odds_path(week: int) -> Path:
+    return Path(f"data/week_{week}_odds_template.csv")
 
-def implied_prob_from_ml(ml):
-    ml = float(ml)
-    return (100/(ml+100)) if ml > 0 else (abs(ml)/(abs(ml)+100))
+# ----------------------------- UTILITIES -----------------------------
+REQ_SCHED_COLS = ["week", "home_team", "away_team"]
+REQ_ODDS_COLS  = ["week","away_team","home_team","home_ml","away_ml","home_spread","away_spread","total","book_time"]
 
-def now_str():
-    return dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+def load_csv_smart(primary_url: str, local_path: Path) -> pd.DataFrame:
+    """Try GitHub raw first; fall back to local path; raise a clear error."""
+    try:
+        return pd.read_csv(primary_url)
+    except Exception as e1:
+        try:
+            return pd.read_csv(local_path)
+        except Exception as e2:
+            raise RuntimeError(
+                f"Unable to load CSV from URL or local.\n"
+                f"URL: {primary_url}\nLocal: {local_path}\n"
+                f"URL error: {repr(e1)}\nLocal error: {repr(e2)}"
+            )
 
-def badge_for_class(cls):
-    return {"Anchor": "✅", "Safe": "✅", "Moderate": "⚠️", "Pass": "❌"}.get(cls, "")
+def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df.columns = [c.strip().lower() for c in df.columns]
+    return df
 
-# ------------------------ Guardrails ------------------------
-def guardrail_rating(row, injuries_df):
-    """Return Anchor | Safe | Moderate | Pass based on injuries + spot (ML only)."""
-    pick   = row["PickTeam"]
-    ml     = float(row["PriceML"])
-    site   = str(row.get("Site","")).lower()
-
-    # Injury red flags for PickTeam: any Out / Doubtful
-    team_inj = injuries_df[injuries_df["Team"].str.lower()==pick.lower()] if not injuries_df.empty else pd.DataFrame()
-    has_out = False
-    if not team_inj.empty:
-        gs = team_inj["GameStatus"].astype(str).str.lower()
-        has_out = gs.str.contains("out").any() or gs.str.contains("doubtful").any()
-
-    # Situational: neutral/intl sites -> more variance
-    neutral = site in {"neutral", "london", "mexico", "brazil"}
-
-    # Road favorite band can be noisy: -170 to -260 and away
-    is_road = (pick == row["AwayTeam"])
-    road_fav_band = (ml <= -170 and ml >= -260 and is_road)
-
-    if has_out:
-        return "Pass"
-    if neutral:
-        return "Moderate"
-    if road_fav_band:
-        return "Moderate"
-    if ml <= -500:
-        return "Anchor"
-    if ml <= -250:
-        return "Safe"
-    return "Moderate"
-
-# ------------------------ Loads ------------------------
-def load_week_inputs(week:int):
-    sched_path = APP_DATA_DIR / f"nfl_2025_week{week}_schedule.csv"
-    odds_path  = APP_DATA_DIR / f"nfl_2025_week{week}_odds.csv"
-    inj_path   = APP_DATA_DIR / f"Week{week}_Injuries.csv"
-
-    missing = []
-    if not sched_path.exists(): missing.append(sched_path)
-    if not odds_path.exists():  missing.append(odds_path)
-    if not inj_path.exists():   # injuries optional; we’ll create empty if missing
-        inj = pd.DataFrame(columns=["Team","Player","Position","Injury","GameStatus","Notes","LastUpdated"])
-    else:
-        inj = pd.read_csv(inj_path)
-
+def validate_has_columns(df: pd.DataFrame, required: list, label: str):
+    missing = [c for c in required if c not in df.columns]
     if missing:
-        return None, None, inj, missing
+        raise ValueError(f"{label} file is missing columns: {missing}\nFound: {list(df.columns)}")
 
-    sched = pd.read_csv(sched_path)
-    odds  = pd.read_csv(odds_path)
-    return sched, odds, inj, []
+def validate_no_duplicates(df: pd.DataFrame, keys: list, label: str):
+    if df.duplicated(keys).any():
+        dups = df[df.duplicated(keys, keep=False)].sort_values(keys)
+        raise ValueError(f"{label} has duplicate rows on {keys}:\n{dups}")
 
-# ------------------------ Build Board (ML only) ------------------------
-def safest_board(sched, odds, inj):
-    # Keep ML only
-    ml = odds[odds["Market"].astype(str).str.upper().eq("ML")].copy()
-    if ml.empty:
-        return pd.DataFrame()
+def safe_merge(schedule: pd.DataFrame, odds: pd.DataFrame, week: int) -> pd.DataFrame:
+    # only rows for selected week
+    sched_w = schedule.query("week == @week").copy()
+    odds_w  = odds.query("week == @week").copy()
 
-    # Most negative = favorite; take one per game
-    ml["Price"] = ml["Price"].astype(float)
-    favs = (ml.sort_values(["GameID","Price"])  # most negative first
-              .groupby("GameID", as_index=False)
-              .first())
+    # Validate basic shapes
+    if sched_w.empty:
+        raise ValueError(f"No schedule rows found for week {week}.")
+    if odds_w.empty:
+        # Provide friendly hint
+        raise ValueError(
+            f"No odds rows found for week {week}. "
+            f"Make sure your week_{week}_odds_template.csv has 'week' filled with {week}."
+        )
 
-    # join schedule
-    use_cols = ["GameID","Week","HomeTeam","AwayTeam","Site"] if "Site" in sched.columns else ["GameID","Week","HomeTeam","AwayTeam"]
-    favs = favs.merge(sched[use_cols], on="GameID", how="left")
+    # Ensure 1 row per matchup in both
+    validate_no_duplicates(sched_w, ["home_team","away_team"], "Schedule")
+    validate_no_duplicates(odds_w,  ["home_team","away_team"], "Odds")
 
-    # rows
-    rows = []
-    for _, r in favs.iterrows():
-        pick_team = r["Team"]
-        opponent  = r["HomeTeam"] if pick_team == r["AwayTeam"] else r["AwayTeam"]
-        rows.append({
-            "Week": int(r["Week"]),
-            "GameID": r["GameID"],
-            "HomeTeam": r["HomeTeam"],
-            "AwayTeam": r["AwayTeam"],
-            "PickTeam": pick_team,
-            "Opponent": opponent,
-            "Market": "ML",
-            "Line": "",
-            "PriceML": float(r["Price"]),
-            "Site": r.get("Site","") if "Site" in r else ""
-        })
-    board = pd.DataFrame(rows)
-    if board.empty: 
-        return board
+    merged = pd.merge(
+        sched_w,
+        odds_w[REQ_ODDS_COLS],  # keep ordered/clean
+        on=["week","home_team","away_team"],
+        how="left",
+        validate="one_to_one",
+    )
+    return merged
 
-    # guardrails
-    board["GuardrailClass"] = board.apply(lambda x: guardrail_rating(x, inj), axis=1)
-    board["Badge"] = board["GuardrailClass"].map(badge_for_class)
-    # rank anchors/safe first, most negative price first
-    class_rank = {"Anchor":0,"Safe":1,"Moderate":2,"Pass":9}
-    board["ClassRank"] = board["GuardrailClass"].map(class_rank)
-    board.sort_values(["ClassRank","PriceML"], inplace=True)
-    return board.reset_index(drop=True)
+def compute_confidence(row) -> int:
+    """
+    Super-light placeholder logic:
+    - If spreads missing → 0 stars
+    - Heavier favorite (|home_spread| >= 6) → 3 stars
+    - Moderate (>= 3) → 2 stars
+    - Slight (< 3) → 1 star
+    """
+    try:
+        hs = float(row.get("home_spread")) if pd.notna(row.get("home_spread")) and row.get("home_spread") != "" else None
+    except Exception:
+        hs = None
+    if hs is None:
+        return 0
+    a = abs(hs)
+    if a >= 6: return 3
+    if a >= 3: return 2
+    return 1
 
-# ------------------------ Tickets ------------------------
-def build_tickets_from_board(board, week:int):
-    """Create three safest tickets: 2-leg, 3-leg, 4-leg (Anchor/Safe only; exclude Pass)."""
-    if board.empty:
-        return pd.DataFrame(), pd.DataFrame()
+def favorite_side(row) -> str:
+    """
+    If home_spread is negative → home favored; if positive → away favored.
+    """
+    try:
+        hs = float(row.get("home_spread"))
+    except Exception:
+        return ""
+    if pd.isna(hs): return ""
+    if hs < 0: return "HOME"
+    if hs > 0: return "AWAY"
+    return "EVEN"
 
-    pool = board.query("GuardrailClass in ['Anchor','Safe']").copy()
-    if pool.empty:
-        # if nothing is Anchor/Safe, allow Moderate so we still show *something*
-        pool = board.query("GuardrailClass != 'Pass'").copy()
+# ----------------------------- UI -----------------------------
+st.set_page_config(page_title="NFL Picks Tracker", layout="wide")
+st.title("🏈 NFL Picks Tracker — Clean Mode")
 
-    # choose top legs
-    legs_2 = pool.head(2)
-    legs_3 = pool.head(3)
-    legs_4 = pool.head(4)
+with st.sidebar:
+    st.markdown("### Data Source")
+    st.caption("Master schedule + weekly odds from GitHub (raw) with local fallback.")
 
-    # helper: display text with badge
-    def make_disp(r):
-        opp = r["Opponent"]
-        price = int(r["PriceML"])
-        return f"{r['Badge']} {r['PickTeam']} over {opp} — ML ({price})"
+# --- WEEK SELECTOR ---
+col_top = st.columns([1,1,2,2])
+with col_top[0]:
+    week = st.number_input("Select Week", min_value=1, max_value=22, value=DEFAULT_WEEK, step=1)
 
-    def add_ticket(name, dflegs):
-        if dflegs.empty: 
-            return []
-        out = []
-        for _, r in dflegs.iterrows():
-            out.append({
-                "TicketName": name,
-                "Week": week,
-                "GameID": r["GameID"],
-                "HomeTeam": r["HomeTeam"],
-                "AwayTeam": r["AwayTeam"],
-                "PickTeam": r["PickTeam"],
-                "Market": "ML",
-                "Line": "",
-                "PriceML": int(r["PriceML"]),
-                "GuardrailClass": r["GuardrailClass"],
-                "Display": make_disp(r)
-            })
-        return out
+with col_top[1]:
+    if st.button("Refresh (load from GitHub)"):
+        st.experimental_rerun()
 
-    tix = []
-    tix += add_ticket("Ticket 1 — Anchor 2-Leg", legs_2)
-    tix += add_ticket("Ticket 2 — Safe 3-Leg",   legs_3)
-    tix += add_ticket("Ticket 3 — Safe 4-Leg",   legs_4)
+# ----------------------------- LOAD DATA -----------------------------
+# Schedule
+try:
+    schedule = load_csv_smart(SCHEDULE_URL, LOCAL_SCHEDULE)
+    schedule = normalize_columns(schedule)
+    validate_has_columns(schedule, REQ_SCHED_COLS, "Schedule")
+except Exception as e:
+    st.error(f"Failed to load schedule.\n\n{e}")
+    st.stop()
 
-    tix_df = pd.DataFrame(tix)
+# Odds for selected week
+ODDS_URL = odds_url_for_week(week)
+try:
+    odds = load_csv_smart(ODDS_URL, local_odds_path(week))
+    odds = normalize_columns(odds)
+    validate_has_columns(odds, REQ_ODDS_COLS, "Odds")
+except Exception as e:
+    st.error(
+        f"Failed to load odds for week {week}.\n\n{e}\n\n"
+        f"Tip: Make sure this file exists: `data/week_{week}_odds_template.csv` in your repo."
+    )
+    st.stop()
 
-    # summaries
-    def summarize(g):
-        decs = [ml_to_decimal(x) for x in g["PriceML"]]
-        dec_prod = float(np.prod(decs)) if decs else 1.0
-        payout_20 = round(20*dec_prod,2)
-        return pd.Series({
-            "Legs": len(g),
-            "DecimalOdds": round(dec_prod,3),
-            "Payout_$20": payout_20,
-            "Updated": now_str()
-        })
-    view = tix_df.groupby("TicketName", as_index=False).apply(summarize) if not tix_df.empty else pd.DataFrame()
-    return tix_df, view
+# ----------------------------- MERGE + GUARDRAILS -----------------------------
+try:
+    merged = safe_merge(schedule, odds, week)
+except Exception as e:
+    st.error(f"Could not combine schedule + odds for week {week}.\n\n{e}")
+    st.stop()
 
-# REPLACE the existing write_week_outputs() with this version
-def write_week_outputs(week:int, tix_df, view_df):
-    """Write detailed legs + compact ticket cards. Ensures folder exists."""
-    out_dir = Path("data/versioned_weeks")
-    out_dir.mkdir(parents=True, exist_ok=True)
+# Compute helpers
+merged["favorite"] = merged.apply(favorite_side, axis=1)
+merged["confidence_stars"] = merged.apply(compute_confidence, axis=1)
 
-    detailed_path = Path(f"Week{week}_Tickets_DETAILED.csv")
-    tix_df.to_csv(detailed_path, index=False)
+# Nice ordering if columns exist
+preferred_cols = (
+    ["week","away_team","home_team"]
+    + [c for c in ["home_ml","away_ml","home_spread","away_spread","total"] if c in merged.columns]
+    + ["favorite","confidence_stars"]
+)
+merged = merged[[c for c in preferred_cols if c in merged.columns] + [c for c in merged.columns if c not in preferred_cols]]
 
-    view_path = out_dir / f"Week{week}_Tickets_VIEW.csv"
-    # ---- fix: make sure we use the function arg 'view_df' ----
-    view_df.to_csv(view_path, index=False)
+# ----------------------------- DISPLAY -----------------------------
+st.subheader(f"Week {week} — Matchups + Odds")
+st.dataframe(merged, use_container_width=True)
 
-    simple_path = Path(f"Week{week}_Tickets.csv")
-    simple = view_df.rename(columns={"TicketName":"Ticket","Payout_$20":"PotentialReturn"})
-    simple.to_csv(simple_path, index=False)
+# Quick summary block
+left, right = st.columns(2)
+with left:
+    st.metric("Games this week", len(merged))
+with right:
+    ready = merged["confidence_stars"].astype(int).ge(1).sum()
+    st.metric("Games with odds (≥1★)", int(ready))
 
-    return detailed_path, view_path, simple_path
+st.markdown("---")
 
-def one_click_refresh(week:int):
-    sched, odds, inj, missing = load_week_inputs(week)
-    if missing:
-        return None, None, None, missing
-    board = safest_board(sched, odds, inj)
-    if board.empty:
-        return pd.DataFrame(), pd.DataFrame(), [], []
-    tix, view = build_tickets_from_board(board, week)
-    if tix.empty:
-        return tix, view, [], []
-    d, v, s = write_week_outputs(week, tix, view)
-    return (tix, view, [d, v, s], [])
+# ----------------------------- EXPORTS (OPTIONAL) -----------------------------
+exp_col1, exp_col2 = st.columns(2)
+with exp_col1:
+    st.download_button(
+        "📥 Download Week Sheet (CSV)",
+        data=merged.to_csv(index=False),
+        file_name=f"week_{week}_merged.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
 
-# ------------------------ UI ------------------------
-st.title("NFL Picks — Moneyline Guardrails (ML-Only)")
-st.caption("Vision: 100% accuracy • Mission: create tickets that fulfill the vision")
+with exp_col2:
+    template = merged.copy()
+    # provide a clean odds-entry template for the same week
+    for c in ["home_ml","away_ml","home_spread","away_spread","total"]:
+        if c in template.columns:
+            template[c] = ""
+    st.download_button(
+        "📄 Download Blank Odds Template for This Week",
+        data=template[REQ_ODDS_COLS].to_csv(index=False),
+        file_name=f"week_{week}_odds_template.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
 
-week = st.number_input("Select Week", min_value=1, max_value=18, value=5, step=1)
-
-colA, colB = st.columns([1,1])
-with colA:
-    if st.button("🔄 Refresh this Week (Schedule + Odds + Injuries → Tickets)"):
-        legs_df, cards_df, paths, missing = one_click_refresh(int(week))
-        if missing:
-            st.error("Missing required files:")
-            for p in missing:
-                st.write("•", str(p))
-        elif legs_df is None:
-            st.error("Could not load inputs. Check your CSVs and try again.")
-        elif legs_df.empty:
-            st.warning("No tickets produced (no Anchor/Safe MLs found). Check odds file.")
-        else:
-            st.success(f"Week {int(week)} refreshed!")
-            st.markdown("**Ticket Legs (with chosen side + badge):**")
-            st.dataframe(legs_df[["TicketName","Display","PriceML","GuardrailClass"]], use_container_width=True)
-            st.markdown("**Ticket Cards (summary):**")
-            st.dataframe(cards_df, use_container_width=True)
-            st.caption("Files written:")
-            for p in paths:
-                st.caption(f"• {p}")
-with colB:
-    st.info("Tip: ML-only mode is locked in. Spreads/totals are disabled by design to protect accuracy.")
-
-st.divider()
-
-# Quick viewer for current week's detailed file if it exists
-detailed_path = Path(f"Week{int(week)}_Tickets_DETAILED.csv")
-if detailed_path.exists():
-    st.subheader(f"Week {int(week)} — Current Tickets (Detailed)")
-    st.dataframe(pd.read_csv(detailed_path), use_container_width=True)
-else:
-    st.caption("No detailed ticket file found yet. Click refresh after adding schedule/odds/injuries CSVs.")
-
-
-
-
-        
+# ----------------------------- NOTES -----------------------------
+st.caption(
+    "Notes: This simplified app ignores old `data/versioned_weeks/` files. "
+    "Keep `nfl_2025_master_schedule.csv` and `week_X_odds_template.csv` in your repo's `/data` folder. "
+    "Update the number at the top (DEFAULT_WEEK) or use the selector here."
+)
+# --------------------------------------------------------------------------------
