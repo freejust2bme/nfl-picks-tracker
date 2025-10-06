@@ -47,8 +47,11 @@ with colC:
 
 # manual safe reload (no experimental attributes)
 if st.button("🔄 Reload tickets"):
-    load_tickets.clear()     # clear cache
-    st.experimental_rerun()  # rerun app
+    load_tickets.clear()
+    if hasattr(st, "rerun"):
+        st.rerun()                 # modern API
+    else:
+        st.experimental_rerun()    # fallback for older versions
 
 {
   "A": [
