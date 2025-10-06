@@ -2,6 +2,8 @@
 # One-source-of-truth: master schedule + weekly odds pulled from GitHub (with local fallback)
 # Guardrails for columns, dups, week mismatches, and helpful errors in the UI.
 
+import streamlit as st
+st.set_page_config(layout="wide", page_title="NFL Ticket App")
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -280,7 +282,12 @@ with exp_col2:
         mime="text/csv",
         use_container_width=True
     )
-
+st.markdown("### 🎟️ Ticket A – Anchor")
+st.write(ticket_a)
+st.markdown("### 🎟️ Ticket B – Multiplier")
+st.write(ticket_b)
+st.markdown("### 🎟️ Ticket C – Upset Matrix")
+st.write(ticket_c)
 # ----------------------------- NOTES -----------------------------
 st.caption(
     "Notes: This simplified app ignores old `data/versioned_weeks/` files. "
