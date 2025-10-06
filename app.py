@@ -2,6 +2,45 @@
 # One-source-of-truth: master schedule + weekly odds pulled from GitHub (with local fallback)
 # Guardrails for columns, dups, week mismatches, and helpful errors in the UI.
 
+import streamlit as st
+from pathlib import Path
+import time
+
+st.set_page_config(layout="wide", page_title="NFL Ticket App")
+
+# Auto-refresh every 10s so config changes show up without redeploy
+st_autorefresh = st.experimental_rerun  # fallback name alias if needed
+st_autorefresh = getattr(st, "autorefresh", None)
+if st_autorefresh:
+    st_autorefresh(interval=10_000, key="auto")
+
+@st.cache_data(ttl=5)  # re-read file at most every 5s
+def load_config():
+    p = Path("config.txt")
+    if not p.exists():
+        return {}
+    cfg = {}
+    for line in p.read_text().splitlines():
+        if " = " in line:
+            k, v = line.split(" = ", 1)
+            cfg[k.strip()] = v.strip()
+    return cfg
+
+cfg = load_config()
+
+colA, colB, colC = st.columns(3)
+with colA:
+    st.markdown(f"### 🎟️ {cfg.get('TicketA','Ticket A — Anchor')}")
+    # render your A ticket here…
+with colB:
+    st.markdown(f"### 🎟️ {cfg.get('TicketB','Ticket B — Multiplier')}")
+    # render your B ticket here…
+with colC:
+    st.markdown(f"### 🎟️ {cfg.get('TicketC','Ticket C — Upset')}")
+    # render your C ticket here…
+
+st.button("Reload config", on_click=lambda: load_config.clear())
+
 with open("config.txt") as f:
     config = dict(line.strip().split(" = ") for line in f if " = " in line)
 st.title("NFL App – " + config.get("TicketA",""))
