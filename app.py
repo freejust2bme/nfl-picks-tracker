@@ -3,8 +3,11 @@
 # Guardrails for columns, dups, week mismatches, and helpful errors in the UI.
 
 import streamlit as st
+st.set_page_config(layout="wide", page_title="NFL Ticket App")
+import pandas as pd
+import numpy as np
 from pathlib import Path
-import time
+import datetime as dt
 
 st.set_page_config(layout="wide", page_title="NFL Ticket App")
 
@@ -44,14 +47,6 @@ st.button("Reload config", on_click=lambda: load_config.clear())
 with open("config.txt") as f:
     config = dict(line.strip().split(" = ") for line in f if " = " in line)
 st.title("NFL App – " + config.get("TicketA",""))
-
-import streamlit as st
-st.set_page_config(layout="wide", page_title="NFL Ticket App")
-import pandas as pd
-import numpy as np
-from pathlib import Path
-import datetime as dt
-import streamlit as st
 
 # ====== CONFIG (edit these two lines as needed) ======================================
 GITHUB_USER_REPO = "freejust2bme/nfl-picks-repo"  # <— your repo
