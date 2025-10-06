@@ -12,10 +12,9 @@ import datetime as dt
 st.set_page_config(layout="wide", page_title="NFL Ticket App")
 
 # Auto-refresh every 10s so config changes show up without redeploy
-st_autorefresh = st.experimental_rerun  # fallback name alias if needed
-st_autorefresh = getattr(st, "autorefresh", None)
-if st_autorefresh:
-    st_autorefresh(interval=10_000, key="auto")
+# Manual reload button (works 100%)
+if st.button("🔄 Reload config"):
+    st.experimental_rerun()
 
 @st.cache_data(ttl=5)  # re-read file at most every 5s
 def load_config():
