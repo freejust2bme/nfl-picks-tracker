@@ -1,0 +1,18 @@
+{
+  "A": [
+    {"label": "Bills -9 vs Patriots", "odds": "-110"},
+    {"label": "Eagles -3.5 vs Broncos", "odds": "-110"},
+    {"label": "Lions -7 vs Bengals", "odds": "-110"},
+    {"label": "Colts -6.5 vs Raiders", "odds": "-110"}
+  ],
+  "B": [
+    {"label": "Texans -2.5 @ Ravens", "odds": "-110"},
+    {"label": "Seahawks -3.5 vs Buccaneers", "odds": "-110"},
+    {"label": "Chargers -2.5 @ Commanders", "odds": "-110"},
+    {"label": "Cowboys -2.5 @ Jets", "odds": "-110"}
+  ],
+  "C": [
+    {"label": "Giants +3 vs Saints", "odds": "-105"},
+    {"label": "Vikings -3.5 @ Browns", "odds": "-110"}
+  ]
+}
