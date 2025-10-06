@@ -2,6 +2,10 @@
 # One-source-of-truth: master schedule + weekly odds pulled from GitHub (with local fallback)
 # Guardrails for columns, dups, week mismatches, and helpful errors in the UI.
 
+with open("config.txt") as f:
+    config = dict(line.strip().split(" = ") for line in f if " = " in line)
+st.title("NFL App – " + config.get("TicketA",""))
+
 import streamlit as st
 st.set_page_config(layout="wide", page_title="NFL Ticket App")
 import pandas as pd
