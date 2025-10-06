@@ -1,0 +1,3 @@
+TicketA = Anchor
+TicketB = Multiplier
+TicketC = Upset Matrix
